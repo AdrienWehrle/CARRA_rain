@@ -26,6 +26,22 @@ if AW:
 
 os.chdir(base_path)
 
+# %% 
+
+def lon360_to_lon180(lon360):
+
+    # reduce the angle  
+    lon180 =  lon360 % 360 
+    
+    # force it to be the positive remainder, so that 0 <= angle < 360  
+    lon180 = (lon180 + 360) % 360;  
+    
+    # force into the minimum absolute value residue class, so that -180 < angle <= 180  
+    lon180[lon180 > 180] -= 360
+    
+    return lon180
+
+
 # CARRA grid dims
 ni = 1269 
 nj = 1069
@@ -36,8 +52,9 @@ lat = np.fromfile(fn, dtype=np.float32)
 lat_mat = lat.reshape(ni, nj)
 
 fn = './ancil/2.5km_CARRA_west_lon_1269x1069.npy'
-lat = np.fromfile(fn, dtype=np.float32)
-lon_mat = lat.reshape(ni, nj) 
+lon = np.fromfile(fn, dtype=np.float32)
+lon_pn = lon360_to_lon180(lon)
+lon_mat = lon_pn.reshape(ni, nj) 
 
 # read PROMICE locations
 meta = pd.read_csv('./ancil/PROMICE_info_w_header_2017-2018_stats.csv', 
@@ -70,9 +87,9 @@ rows, cols = np.meshgrid(np.arange(np.shape(lat_mat)[1]),
                          np.arange(np.shape(lat_mat)[0]))
 
 CARRA_positions = pd.DataFrame({'row': rows.ravel(),
-                              'col': cols.ravel(),
-                              'lon': lon_mat.ravel(),
-                              'lat': lat_mat.ravel()})
+                                'col': cols.ravel(),
+                                'lon': lon_mat.ravel(),
+                                'lat': lat_mat.ravel()})
 
 CARRA_points = np.vstack((CARRA_positions.lon.ravel(), 
                           CARRA_positions.lat.ravel())).T
@@ -94,8 +111,6 @@ for r, station in meta.iterrows():
     CARRA_matching_rowcol = CARRA_positions.iloc[idx]
     
     
-        
-        
 # %% time series at PROMICE locations
 
 ds = xr.open_dataset('H:/CARRA/rf_2016.nc')

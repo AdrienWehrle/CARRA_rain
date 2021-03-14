@@ -18,8 +18,8 @@ import xarray as xr
 
 base_path='/Users/jason/Dropbox/CARRA/CARRA_rain/'
 
-AW=0
-if AW:base_path=''
+AW=1
+if AW:base_path='C:/Users/Pascal/Desktop/GEUS_2019/SICE_AW_JEB/SICE_AW_JEB/CARRA_rain/'
 os.chdir(base_path)
 
 # --------------------------- function for distance on sphere
@@ -53,7 +53,7 @@ fn='./ancil/lon_1269x1069.numpy.bin'
 lon=np.fromfile(fn, dtype=float, count=-1, sep='', offset=0)
 
 # read PROMICE locations
-meta=pd.read_csv('/Users/jason/Dropbox/AWS/PROMICE/ancil/PROMICE_info_w_header_2017-2018_stats.csv',delim_whitespace=True)
+meta=pd.read_csv('./ancil/PROMICE_info_w_header_2017-2018_stats.csv',delim_whitespace=True)
 # print(meta.columns)
 
 n=len(meta)
@@ -69,7 +69,10 @@ for i in range(n):
     print(meta.name[i],meta.lon[i], meta.lat[i],minx,v[0])
     
 #%% read ~500 Mb CARRA infile
-ds = xr.open_dataset('/Users/jason/0_dat/CARRA/output/rf_2017.nc')
+
+if not AW: ds = xr.open_dataset('/Users/jason/0_dat/CARRA/output/rf_2017.nc')
+
+if AW: ds = xr.open_dataset('H:/CARRA/rf_2016.nc')
 print(ds)
 
 rf = np.array(ds['rf'])

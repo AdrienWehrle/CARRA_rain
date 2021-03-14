@@ -16,6 +16,7 @@ import glob
 import geopandas as gpd
 from scipy.spatial import distance
 from shapely.geometry import Point
+from datetime import datetime
 
 base_path = '/Users/jason/Dropbox/CARRA/CARRA_rain/'
 
@@ -101,6 +102,9 @@ CARRA_gdfpoints = gpd.GeoDataFrame(geometry=gpd.points_from_xy(CARRA_positions.l
 
 CARRA_rows = []
 CARRA_cols = []
+
+CARRA_cells_atPROMICE = {}
+
 for r, station in meta.iterrows():
     
     station_point = np.vstack((station.lon,
@@ -109,6 +113,8 @@ for r, station in meta.iterrows():
     # get CARRA cell matching station location
     CARRA_matching_cell, idx = match(station_point, CARRA_points)
     CARRA_matching_rowcol = CARRA_positions.iloc[idx]
+    
+    CARRA_cells_atPROMICE[station.station_name] = CARRA_matching_rowcol
     
     
 # %% time series at PROMICE locations
@@ -126,7 +132,23 @@ for CARRA_file in CARRA_files:
     
     ds = xr.open_dataset(CARRA_file)
     
+    year = CARRA_file.split(os.sep)[-1].split('.')[0].split('_')[-1]
+    
     annual_results = pd.DataFrame()
+    
+    timeC = np.arange(datetime(1985,7,1), datetime(2015,7,1), timedelta(days=1)).astype(datetime)
+    
+    # target time series at the point of interest
+    era_point_timeseries = np.array(era.t2m[:, 0, int(era_matching_rowcol.col), 
+                                    int(era_matching_rowcol.row)]) - 273.15
+    
+    for r, station in meta.interrows():
+        
+        CARRA_location = CARRA_cells_atPROMICE[station.station_name]
+        
+        
+        
+        
     
     
         

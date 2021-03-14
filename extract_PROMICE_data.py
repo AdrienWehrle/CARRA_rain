@@ -16,7 +16,7 @@ import glob
 import geopandas as gpd
 from scipy.spatial import distance
 from shapely.geometry import Point
-from datetime import datetime
+from datetime import datetime, timedelta
 
 base_path = '/Users/jason/Dropbox/CARRA/CARRA_rain/'
 
@@ -132,19 +132,25 @@ for CARRA_file in CARRA_files:
     
     ds = xr.open_dataset(CARRA_file)
     
-    year = CARRA_file.split(os.sep)[-1].split('.')[0].split('_')[-1]
+    year = int(CARRA_file.split(os.sep)[-1].split('.')[0].split('_')[-1])
     
     annual_results = pd.DataFrame()
     
-    timeC = np.arange(datetime(1985,7,1), datetime(2015,7,1), timedelta(days=1)).astype(datetime)
+    time = np.arange(datetime(year,1,1), datetime(year,12,31), 
+                     timedelta(days=1)).astype(datetime)
     
-    # target time series at the point of interest
-    era_point_timeseries = np.array(era.t2m[:, 0, int(era_matching_rowcol.col), 
-                                    int(era_matching_rowcol.row)]) - 273.15
+    dt_time = pd.to_datetime(time)
     
-    for r, station in meta.interrows():
+    
+    for r, station in meta.iterrows():
         
         CARRA_location = CARRA_cells_atPROMICE[station.station_name]
+        
+        # target time series at the point of interest
+        CARRA_station_timeseries = np.array(ds.rf[:,int(CARRA_location.col), 
+                                            int(CARRA_location.row)])
+        
+        
         
         
         

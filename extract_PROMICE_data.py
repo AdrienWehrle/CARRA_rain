@@ -136,28 +136,20 @@ for CARRA_file in CARRA_files:
     
     annual_results = pd.DataFrame()
     
-    time = np.arange(datetime(year,1,1), datetime(year,12,31), 
+    time = np.arange(datetime(year, 1, 1), datetime(year + 1, 1, 1), 
                      timedelta(days=1)).astype(datetime)
     
     dt_time = pd.to_datetime(time)
     
+    annual_results['time'] = dt_time
     
     for r, station in meta.iterrows():
         
         CARRA_location = CARRA_cells_atPROMICE[station.station_name]
         
         # target time series at the point of interest
-        CARRA_station_timeseries = np.array(ds.rf[:,int(CARRA_location.col), 
-                                            int(CARRA_location.row)])
+        CARRA_PROMICE_timeseries = np.array(ds.rf[:,int(CARRA_location.col), 
+                                                  int(CARRA_location.row)])
         
-        
-        
-        
-        
-        
-    
-    
-        
-        
-        
+        annual_results[station.station_name] = CARRA_PROMICE_timeseries
         

@@ -128,7 +128,9 @@ if not AW:
     
 CARRA_files = glob.glob(CARRA_path + 'rf_*.nc')
 
-for CARRA_file in CARRA_files:
+results = pd.DataFrame()
+
+for i, CARRA_file in enumerate(CARRA_files):
     
     ds = xr.open_dataset(CARRA_file)
     
@@ -152,4 +154,8 @@ for CARRA_file in CARRA_files:
                                                   int(CARRA_location.row)])
         
         annual_results[station.station_name] = CARRA_PROMICE_timeseries
+    
+    results = results.append(annual_results)
+    
+    print(CARRA_file)
         

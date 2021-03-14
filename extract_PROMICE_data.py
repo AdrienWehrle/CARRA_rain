@@ -158,4 +158,6 @@ for i, CARRA_file in enumerate(CARRA_files):
     results = results.append(annual_results)
     
     print(CARRA_file)
+    
+results.to_csv(CARRA_path + 'CARRA_PROMICE_results.csv')
         
